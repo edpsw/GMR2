@@ -39,3 +39,41 @@ python scripts/bvh_to_robot_asap.py  \
 --src_folder /home/z/code/ubisoft-laforge-animation-dataset/output/BVH \
 --bvh_name dance1_subject2 \
 --data_frames 1200
+
+
+
+
+
+######################################################
+
+cd path/to/GVHMR
+python tools/demo/demo.py --video=docs/example_video/tennis.mp4 -s
+
+python tools/demo/demo.py --video=/home/z/Downloads/taiji.mp4 -s
+
+
+在 GVHMR/outputs/demo/tennis/hmr4d_results.pt 中获取已保存的人体姿势数据。
+
+python scripts/gvhmr_to_robot.py \
+--gvhmr_pred_file /home/z/code/gvhmr/outputs/demo/tennis/hmr4d_results.pt \
+--robot unitree_g1 \
+--record_video \
+--save_path motion_data/video/g1/tennis.pkl
+
+
+
+python scripts/gvhmr_to_robot.py \
+--gvhmr_pred_file /home/z/code/gvhmr/outputs/demo/tennis/hmr4d_results.pt \
+--robot qiao_q2_19dof \
+--record_video \
+--save_path motion_data/video/q2/tennis.pkl
+
+python scripts/gvhmr_to_robot.py \
+--gvhmr_pred_file /home/z/code/gvhmr/outputs/demo/taiji/hmr4d_results.pt \
+--robot qiao_q2_19dof \
+--record_video \
+--save_path motion_data/video/q2/taiji.pkl
+
+
+
+python scripts/gvhmr_to_robot.py --gvhmr_pred_file /home/z/code/gvhmr/outputs/demo/2795750-uhd_3840_2160_25fps/2795750-uhd_3840_2160_25fps_3_incam_global_horiz.mp4 --robot unitree_g1 --record_video
