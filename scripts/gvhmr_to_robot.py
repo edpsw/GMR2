@@ -11,6 +11,8 @@ from general_motion_retargeting.utils.smpl import load_gvhmr_pred_file, get_gvhm
 
 from rich import print
 
+import pandas as pd
+
 if __name__ == "__main__":
     
     HERE = pathlib.Path(__file__).parent
@@ -21,12 +23,12 @@ if __name__ == "__main__":
         help="SMPLX motion file to load.",
         type=str,
         # required=True,
-        default="/home/yanjieze/projects/g1_wbc/GMR/GVHMR/outputs/demo/tennis/hmr4d_results.pt",
+        default="/home/z/code/gvhmr/outputs/demo/tennis/hmr4d_results.pt",
     )
     
     parser.add_argument(
         "--robot",
-        choices=["unitree_g1", "unitree_g1_with_hands", "unitree_h1", "unitree_h1_2",
+        choices=["qiao_q2_19dof","unitree_g1", "unitree_g1_with_hands", "unitree_h1", "unitree_h1_2",
                  "booster_t1", "booster_t1_29dof","stanford_toddy", "fourier_n1", 
                 "engineai_pm01", "kuavo_s45", "hightorque_hi", "galaxea_r1pro", "berkeley_humanoid_lite", "booster_k1",
                 "pnd_adam_lite", "openloong", "tienkung"],
@@ -64,6 +66,7 @@ if __name__ == "__main__":
 
 
     SMPLX_FOLDER = HERE / ".." / "assets" / "body_models"
+    # SMPLX_FOLDER = HERE / ".." / "assets" / args.robot
     
     
     # Load SMPLX trajectory
@@ -163,7 +166,41 @@ if __name__ == "__main__":
         with open(args.save_path, "wb") as f:
             pickle.dump(motion_data, f)
         print(f"Saved to {args.save_path}")
-            
+
+    if args.save_path is not None:
+        import pandas as pd
+        import os
+        
+        # 修改文件扩展名为.csv
+        base_path = os.path.splitext(args.save_path)[0]
+        csv_save_path = base_path + '.csv'
+        
+        root_pos = np.array([qpos[:3] for qpos in qpos_list])
+        # save from wxyz to xyzw
+        root_rot = np.array([qpos[3:7][[1,2,3,0]] for qpos in qpos_list])
+        dof_pos = np.array([qpos[7:] for qpos in qpos_list])
+        
+        # 将每一帧的数据合并为一个DataFrame[2](@ref)
+        combined_data = []
+        for i in range(len(root_pos)):
+            frame_data = np.concatenate([root_pos[i], root_rot[i], dof_pos[i]])
+            combined_data.append(frame_data)
+        
+        # 创建DataFrame并设置列名
+        df = pd.DataFrame(combined_data)
+        
+        # 设置列名
+        columns = []
+        columns.extend([f'root_pos_{j}' for j in range(len(root_pos[0]))])
+        columns.extend([f'root_rot_{j}' for j in range(len(root_rot[0]))])
+        columns.extend([f'dof_pos_{j}' for j in range(len(dof_pos[0]))])
+        df.columns = columns
+        
+        # 保存为CSV，保留6位小数[2](@ref)
+        df.to_csv(csv_save_path, index=False, float_format='%.6f',header=False)
+        
+        print(f"Saved to {csv_save_path}")
+                
       
     
     robot_motion_viewer.close()

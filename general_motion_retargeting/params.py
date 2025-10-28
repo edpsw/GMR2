@@ -27,7 +27,7 @@ ROBOT_XML_DICT = {
 IK_CONFIG_DICT = {
     # offline data
     "smplx":{
-        # "q2_19dof": IK_CONFIG_ROOT / "smplx_to_q2_19dof.json",
+        "qiao_q2_19dof": IK_CONFIG_ROOT / "smplx_to_q2.json",
         "unitree_g1": IK_CONFIG_ROOT / "smplx_to_g1.json",
         "unitree_g1_with_hands": IK_CONFIG_ROOT / "smplx_to_g1.json",
         "unitree_h1": IK_CONFIG_ROOT / "smplx_to_h1.json",
